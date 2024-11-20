@@ -2,11 +2,11 @@ version: '3'
 
 volumes:
   ikev2-vpn-data:
+  sing-box-config:
 
 services:
   vpn:
-    build:
-      context: .
+    image: khoshnevis/ipsec-sing-box-server
     restart: always
     env_file:
       - ./vpn.env
@@ -18,5 +18,5 @@ services:
     container_name: ipsec-sing-box-server
     volumes:
       - ikev2-vpn-data:/etc/ipsec.d
+      - sing-box-config:/etc/sing-box   # Volume for Sing-box config
       - /lib/modules:/lib/modules:ro
-      - ./sing-box/config.json:/etc/sing-box/config.json:ro
