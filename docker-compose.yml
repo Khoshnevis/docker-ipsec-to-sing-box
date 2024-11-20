@@ -2,10 +2,11 @@ version: '3'
 
 volumes:
   ikev2-vpn-data:
+  sing-box-config:
 
 services:
   vpn:
-    image: hwdsl2/ipsec-vpn-server
+    image: khoshnevis/ipsec-sing-box-server
     restart: always
     env_file:
       - ./vpn.env
@@ -13,8 +14,9 @@ services:
       - "500:500/udp"
       - "4500:4500/udp"
     privileged: true
-    hostname: ipsec-vpn-server
-    container_name: ipsec-vpn-server
+    hostname: ipsec-sing-box-server
+    container_name: ipsec-sing-box-server
     volumes:
       - ikev2-vpn-data:/etc/ipsec.d
+      - sing-box-config:/etc/sing-box   # Volume for Sing-box config
       - /lib/modules:/lib/modules:ro

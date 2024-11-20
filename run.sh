@@ -634,6 +634,31 @@ else
   service ipsec start >/dev/null 2>&1
 fi
 
+# Start Sing-box
+echo "Starting Sing-box..."
+sing-box run -c /etc/sing-box/config.json &
+
+# Wait for the tun0 interface to be ready
+echo "Waiting for tun0 interface..."
+while ! ip link show tun0 >/dev/null 2>&1; do sleep 1; done
+echo "tun0 interface is up."
+
+# Configure routing and iptables for tun0
+echo "Configuring routing and iptables for tun0..."
+
+# Add a default route via tun0 in a separate routing table
+ip route add default dev tun0 table 100
+ip rule add from all table 100
+
+# Flush existing iptables rules to avoid conflicts
+iptables -F
+iptables -t nat -F
+
+# Set up iptables rules to route traffic through tun0
+iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
+iptables -A FORWARD -i tun0 -o ppp+ -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i ppp+ -o tun0 -j ACCEPT
+
 if [ -n "$VPN_DNS_NAME" ]; then
   server_text="Server"
 else
