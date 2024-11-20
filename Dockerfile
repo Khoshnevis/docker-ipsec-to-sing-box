@@ -2,7 +2,7 @@
 FROM debian:bookworm-slim
 
 ENV SWAN_VER=5.1
-ENV SING_VER=
+ENV SING_VER=1.10.1
 WORKDIR /opt/src
 
 # Install dependencies
